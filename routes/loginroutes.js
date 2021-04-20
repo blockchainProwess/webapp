@@ -180,15 +180,31 @@ exports.login = function(req,res){
     });
 }
 
-exports.reset = function(req,res) {
-    const transport = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: true,
-        auth: {
-           user: 'lekya.sheral05@gmail.com',
-           pass: 'ryandee1998'
+exports.reset = async function(req,res) {
+    var email = req.body.email;
+    var password = req.body.password;
+    var saltRounds = 10;   
+    const encryptedPassword = await bcrypt.hash(password, saltRounds)
+    connection.query('SELECT * FROM Vendor_Reg WHERE email = ?',[email], function (error, results, fields) {
+        if (results.length === 0) {
+            res.json({
+              status:false,
+              message:'email does not exist'
+              })
+        } else {
+            connection.query('UPDATE Vendor_Reg SET ? WHERE email = ?', [{ Password: encryptedPassword }, email], function (error, results, fields) {
+                if (error) {
+                    res.send({
+                        "code": 400,
+                        "failed": error
+                    })
+                } else {
+                    res.send({
+                        "code": 200,
+                        "success": "password changed"
+                    });
+                }
+            });
         }
     });
 }
-

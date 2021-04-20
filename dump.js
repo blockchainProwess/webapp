@@ -33,3 +33,13 @@ exports.login = async function(req,res){
       });
   }
   
+
+  const transport = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: true,
+    auth: {
+       user: 'lekya.sheral05@gmail.com',
+       pass: 'ryandee1998'
+    }
+});
